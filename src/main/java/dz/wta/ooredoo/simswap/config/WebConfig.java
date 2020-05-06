@@ -1,5 +1,6 @@
 package dz.wta.ooredoo.simswap.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,9 @@ import dz.wta.ooredoo.simswap.filter.CustomFilter;
 public class WebConfig implements WebMvcConfigurer {
 
 	private final long MAX_AGE = 3600;
+
+	@Autowired
+	CustomFilter customFilter;
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
@@ -26,7 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
 	@Bean
 	public FilterRegistrationBean<CustomFilter> loggingFilter() {
 		FilterRegistrationBean<CustomFilter> registrationBean = new FilterRegistrationBean<>();
-		registrationBean.setFilter(new CustomFilter());
+		registrationBean.setFilter(customFilter);
 		registrationBean.addUrlPatterns("/api/*");
 
 		return registrationBean;

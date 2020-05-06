@@ -2,6 +2,8 @@ package dz.wta.ooredoo.simswap.exception;
 
 import static dz.wta.ooredoo.simswap.model.GenericResponse.ERROR_MESSAGE;
 import static dz.wta.ooredoo.simswap.model.GenericResponse.GENERIC_ERROR;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +25,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import dz.wta.ooredoo.simswap.model.ConstraintViolationResponse;
 import dz.wta.ooredoo.simswap.model.GenericResponse;
 import dz.wta.ooredoo.simswap.model.InvalidFieldsResponse;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 @ControllerAdvice
 public class ExceptionHandlerAdvicer extends ResponseEntityExceptionHandler {
@@ -34,8 +37,7 @@ public class ExceptionHandlerAdvicer extends ResponseEntityExceptionHandler {
 
 		LOGGER.error("Handling " + ex.getClass().getSimpleName() + " du to: " + ex.getMessage());
 
-		return new ResponseEntity<GenericResponse>(new GenericResponse(1, GENERIC_ERROR),
-				HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<GenericResponse>(new GenericResponse(1, GENERIC_ERROR), INTERNAL_SERVER_ERROR);
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class ExceptionHandlerAdvicer extends ResponseEntityExceptionHandler {
 		final List<String> errors = ex.getBindingResult().getFieldErrors().stream()
 				.map(error -> error.getDefaultMessage()).collect(Collectors.toList());
 
-		return new ResponseEntity<Object>(new InvalidFieldsResponse(1, ERROR_MESSAGE, errors), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Object>(new InvalidFieldsResponse(1, ERROR_MESSAGE, errors), BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
